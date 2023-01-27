@@ -38,10 +38,11 @@ document.querySelector('#loadFrameVersion').onclick = async function() {
 		ability3: {name:'Ability 4', text:'', x:0.1447, y:0, width:0.32, height:0, size:0.0305},
 		reminder: {name:'Reminder Text', text:'{i}(As this Saga enters and after your draw step, add a lore counter. Sacrifice after III.)', x:0.1, y:0.1043, width:0.3667, height:0.1772, size:0.0281, shadowColor:'white'}
 	});
+	document.querySelector('#info-defaultCopyright').value = '\u2122 & \u00a9 {year} Wizards of the Coast, Inc.';
 	//bottom info
 	loadBottomInfo({
 		top: {text:'Illus: {elemidinfo-artist}', x:0.1, y:1872/2100, width:0.8, height:0.0267, oneLine:true, size:0.0267, align:'center', shadowX:0.0021, shadowY:0.0015, color:'white'},
-		wizards: {name:'wizards', text:'\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast, Inc. {elemidinfo-number}', x:0.1, y:1933/2100, width:0.8, height:0.0172, oneLine:true, size:0.0172, align:'center', shadowX:0.0014, shadowY:0.001, color:'white'}
+		copyright: {name:'copyright', text:'{elemidinfo-copyright} {elemidinfo-number}', x:0.1, y:1933/2100, width:0.8, height:0.0172, oneLine:true, size:0.0172, align:'center', shadowX:0.0014, shadowY:0.001, color:'white'}
 	});
 }
 //loads available frames

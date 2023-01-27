@@ -30,10 +30,11 @@ document.querySelector('#loadFrameVersion').onclick = async function() {
 		left: {name:'Left Mod Desc.', text:'Starting & Max. Hand Size', x:0.1114, y:0.7762, width:0.0667, height:0.0596, size:0.0124, align:'center'},
 		right: {name:'Right Mod Desc.', text:'Starting Life', x:0.826, y:0.7762, width:0.0667, height:0.0596, size:0.0124, align:'center'}
 	});
+	document.querySelector('#info-defaultCopyright').value = '\u2122 & \u00a9 1993\u2014{year} Wizards of the Coast, Inc.';
 	//bottom info
 	await loadBottomInfo({
 		illus: {text:'Illus. {elemidinfo-artist}', x:0.0647, y:0.8977, width:0.8707, height:0.0171, font:'mplantin', size:0.0167, align:'center'},
-		wizards: {name:'wizards', text:'\u2122 & \u00a9 1993—{elemidinfo-year} Wizards of the Coast, Inc.', x:0.0647, y:0.9134, width:0.8707, height:0.0167, font:'mplantin', size:0.0124, align:'center'}
+		copyright: {name:'copyright', text:'{elemidinfo-copyright}', x:0.0647, y:0.9134, width:0.8707, height:0.0167, font:'mplantin', size:0.0124, align:'center'}
 	});
 }
 //loads available frames

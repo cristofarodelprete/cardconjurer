@@ -34,10 +34,11 @@ document.querySelector('#loadFrameVersion').onclick = async function() {
 		pt: {name:'Power/Toughness', text:'', x:0.7928, y:0.902, width:0.1367, height:0.0372, size:0.062, font:'belerenbsc', oneLine:true, align:'center', color:'white', outlineWidth:0.0034, font:'Acme-Regular'},
 		pronouns: {name:'Pronouns', text:'', x:0.0234, y:0.95, width:0.9534, height:0.05, size:0.03, align:'center', color:'white', outlineWidth:0.0034, font:'Acme-Regular', manaImageScale:10/7, manaPrefix:'c'},
 	});
+	document.querySelector('#info-defaultCopyright').value = '\u2122 & \u00a9 {year} Wizards of the Coast';
 	//bottom info
 	await loadBottomInfo({
 		topLeft: {text:'Art: {elemidinfo-artist}', x:0.01, y:0.9572, width:0.98, height:0.0177, oneLine:true, font:'Acme-Regular', size:0.0177, color:'white', outlineWidth:0.003},
-		wizards: {name:'wizards', text:'{ptshift0,0.0172}\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast', x:0.03, y:0.9767, width:0.94, height:0.0177, oneLine:true, font:'Acme-Regular', size:0.0177, color:'white', align:'right', outlineWidth:0.003}
+		copyright: {name:'copyright', text:'{ptshift0,0.0172}{elemidinfo-copyright}', x:0.03, y:0.9767, width:0.94, height:0.0177, oneLine:true, font:'Acme-Regular', size:0.0177, color:'white', align:'right', outlineWidth:0.003}
 	});
 	setTimeout(bottomInfoEdited, 250);
 }

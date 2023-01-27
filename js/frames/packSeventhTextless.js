@@ -37,10 +37,11 @@ document.querySelector('#loadFrameVersion').onclick = async function() {
 		rules: {name:'Rules Text', text:'', x:0.128, y:0.6429, width:0.744, height:0.2381, size:0.0358, color:'white', shadowX:0.0014, shadowY:0.001},
 		pt: {name:'Power/Toughness', text:'', x:0.8, y:0.8981, width:0.1367, height:0.0453, size:0.0453, oneLine:true, align:'center', color:'white', shadowX:0.002, shadowY:0.0015}
 	});
+	document.querySelector('#info-defaultCopyright').value = '\u2122 & \u00a9 {year} Wizards of the Coast';
 	//bottom info
 	loadBottomInfo({
 		top: {text:'Illus: {elemidinfo-artist}', x:0.0614, y:0.8915, width:0.8774, height:0.0281, oneLine:true, size:0.0281, align:'center', shadowX:0.0014, shadowY:0.001, color:'white'},
-		wizards: {name:'wizards', text:'\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast', x:0.0614, y:0.921, width:0.8774, height:0.0172, oneLine:true, size:0.0172, align:'center', shadowX:0.0014, shadowY:0.001, color:'white'}
+		copyright: {name:'copyright', text:'{elemidinfo-copyright}', x:0.0614, y:0.921, width:0.8774, height:0.0172, oneLine:true, size:0.0172, align:'center', shadowX:0.0014, shadowY:0.001, color:'white'}
 	});
 }
 //loads available frames

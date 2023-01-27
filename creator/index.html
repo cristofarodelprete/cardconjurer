@@ -562,12 +562,26 @@
 							</label>
 						</div>
 						<div class='readable-background padding margin-bottom'>
+							<h5 class='input-description padding margin-bottom'>Select copyright mode</h5>
+							<div class='input-grid margin-bottom'>
+								<select class='input' id='info-copyrightMode' onchange='toggleCopyrightMode();'>
+									<option value="none">None</option>
+									<option value="default" selected="selected">Frame default</option>
+									<option value="custom">Custom (insert below)</option>
+								</select>
+								<input id='info-defaultCopyright' type='hidden' value='™ & © {year} Wizards of the Coast'>
+							</div>
+							<div id="customCopyrightDiv" class='input-grid margin-bottom' style="display:none">
+								<input id='info-customCopyright' type='text' class='input' oninput='bottomInfoEdited();' placeholder='Copyright' value='™ & © {year} Wizards of the Coast'>
+							</div>
+						</div>
+						<div class='readable-background padding margin-bottom'>
 							<h5 class='input-description padding margin-bottom'>Select star (seen on foils) or dot (seen on regular cards)</h5>
 							<div class='input-grid margin-bottom'>
 								<select class='input' id='info-star' onchange='toggleStarDot();'>
 									<option value=" ">None</option>
 									<option value="*" selected="selected">Star</option>
-									<option value=" � ">Dot</option>
+									<option value=" • ">Dot</option>
 								</select>
 							</div>
 						</div>

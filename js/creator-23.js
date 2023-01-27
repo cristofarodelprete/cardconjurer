@@ -71,10 +71,6 @@ var savedTextXPosition2 = 0;
 var savedRollYPosition = null;
 var savedFont = null;
 var savedTextContents = {};
-//for misc
-var date = new Date();
-card.infoYear = date.getFullYear();
-document.querySelector("#info-year").value = card.infoYear;
 //to avoid rerunning special scripts (planeswalker, saga, etc...)
 var loadedVersions = [];
 //Card Object managament
@@ -102,13 +98,14 @@ async function resetCardIrregularities({canvas = [1500, 2100, 0, 0], resetOthers
 		}
 	});
 	if (resetOthers) {
+		card.defaultCopyright = '\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast';
 		//bottom info
 
 		await loadBottomInfo({
 			midLeft: {text:'{elemidinfo-set}{elemidinfo-star}{elemidinfo-language}  {savex}{fontbelerenbsc}{fontsize' + scaleHeight(0.001) + '}{upinline' + scaleHeight(0.0005) + '}\uFFEE{savex2}{elemidinfo-artist}', x:0.0647, y:0.9548, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 			topLeft: {text:'{elemidinfo-number}  {loadx}{elemidinfo-rarity}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 			note: {text:'{loadx2}{elemidinfo-note}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
-			wizards: {name:'wizards', text:'{ptshift0,0.0172}\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast', x:0.0647, y:0.9377, width:0.8707, height:0.0167, oneLine:true, font:'mplantin', size:0.0162, color:'white', align:'right', outlineWidth:0.003},
+			copyright: {name:'copyright', text:'{ptshift0,0.0172}{elemidinfo-copyright}', x:0.0647, y:0.9377, width:0.8707, height:0.0167, oneLine:true, font:'mplantin', size:0.0162, color:'white', align:'right', outlineWidth:0.003}
 		});
 		//onload
 		card.onload = null;
@@ -2232,7 +2229,24 @@ function writeText(textObject, targetContext) {
 			if (wordToWrite.includes('{') && wordToWrite.includes('}') || textManaCost || savedFont) {
 				var possibleCode = wordToWrite.toLowerCase().replace('{', '').replace('}', '');
 				wordToWrite = null;
-				if (possibleCode == 'line') {
+				if (possibleCode.includes('elemid')) {
+					var eid = word.replace('{elemid', '').replace('}', '');
+					if (eid == 'info-copyright') {
+						var cmode = document.querySelector('#info-copyrightMode').value;
+						if (cmode == 'custom') {
+							wordToWrite = document.querySelector('#info-customCopyright').value || '';
+						} else if (cmode == 'none') {
+							wordToWrite = '';
+						} else {
+							wordToWrite = document.querySelector('#info-defaultCopyright').value || '';
+						}
+					} else if (document.querySelector('#' + eid)) {
+						wordToWrite = document.querySelector('#' + eid).value || '';
+					}
+					if (wordToWrite !== null) {
+						wordToWrite = wordToWrite.replace('{year}', document.querySelector('#info-year').value || new Date().getFullYear());
+					}
+				} else if (possibleCode == 'line') {
 					newLine = true;
 					startingCurrentX = 0;
 					newLineSpacing = textSize * 0.35;
@@ -2357,10 +2371,6 @@ function writeText(textObject, targetContext) {
 					startingCurrentX += currentX;
 				} else if (possibleCode == '/indent') {
 					startingCurrentX = 0;
-				} else if (possibleCode.includes('elemid')) {
-					if (document.querySelector('#' + word.replace('{elemid', '').replace('}', ''))) {
-						wordToWrite = document.querySelector('#' + word.replace('{elemid', '').replace('}', '')).value || '';
-					}
 				} else if (possibleCode == 'savex') {
 					savedTextXPosition = currentX;
 				} else if (possibleCode == 'loadx') {
@@ -2949,6 +2959,7 @@ async function bottomInfoEdited() {
 	card.infoLanguage = document.querySelector('#info-language').value;
 	card.infoArtist = document.querySelector('#info-artist').value;
 	card.infoYear = document.querySelector('#info-year').value;
+	card.infoCopyright = document.querySelector('#info-customCopyright').value;
 	card.infoStar = document.querySelector('#info-star').value;
 	card.infoNote = document.querySelector('#info-note').value;
 	for (var textObject of Object.entries(card.bottomInfo)) {
@@ -2964,6 +2975,11 @@ function artistEdited(value) {
 }
 function toggleStarDot() {
 	defaultCollector.star = document.querySelector('#info-star').value;
+	bottomInfoEdited();
+}
+function toggleCopyrightMode() {
+	defaultCollector.copyrightMode = document.querySelector('#info-copyrightMode').value;
+	document.querySelector('#customCopyrightDiv').style.display = (defaultCollector.copyrightMode == 'custom') ? 'block' : 'none';
 	bottomInfoEdited();
 }
 function enableImportCollectorInfo() {
@@ -2986,8 +3002,11 @@ function setDefaultCollector() {
 		rarity: document.querySelector('#info-rarity').value,
 		setCode: document.querySelector('#info-set').value,
 		lang: document.querySelector('#info-language').value,
+		year: document.querySelector('#info-year').value,
 		star: document.querySelector('#info-star').value,
-		note: document.querySelector('#info-note').value
+		note: document.querySelector('#info-note').value,
+		customCopyright: document.querySelector('#info-customCopyright').value,
+		copyrightMode: document.querySelector('#info-copyrightMode').value
 	};
 	localStorage.setItem('defaultCollector', JSON.stringify(defaultCollector));
 }
@@ -3571,6 +3590,15 @@ function fetchScryfallData(cardName, callback = console.log, searchUniqueArt = '
 		console.log('Scryfall API search failed.')
 	}
 }
+
+function getPropertyOrSetDefault(obj, key, defVal) {
+	if (typeof obj[key] == 'undefined' || obj[key] === null) {
+		obj[key] = defVal;
+		return defVal;
+	}
+	return obj[key];
+}
+
 // INITIALIZATION
 
 // auto load frame version (user defaults)
@@ -3581,12 +3609,15 @@ document.querySelector('#autoLoadFrameVersion').checked = 'true' == localStorage
 
 // collector info (user defaults)
 var defaultCollector = JSON.parse(localStorage.getItem('defaultCollector') || '{}');
-document.querySelector('#info-number').value = getPropertyOrSetDefault(defaultCollector, 'number', new Date().getFullYear());
+document.querySelector('#info-number').value = getPropertyOrSetDefault(defaultCollector, 'number', '{year}');
 document.querySelector('#info-rarity').value = getPropertyOrSetDefault(defaultCollector, 'rarity', 'P');
 document.querySelector('#info-set').value = getPropertyOrSetDefault(defaultCollector, 'setCode', 'MTG');
 document.querySelector('#info-language').value = getPropertyOrSetDefault(defaultCollector, 'lang', 'EN');
+document.querySelector('#info-year').value = getPropertyOrSetDefault(defaultCollector, 'year', new Date().getFullYear());
 document.querySelector('#info-star').value = getPropertyOrSetDefault(defaultCollector, 'star', '*');
 document.querySelector('#info-note').value = getPropertyOrSetDefault(defaultCollector, 'note', '');
+document.querySelector('#info-copyrightMode').value = getPropertyOrSetDefault(defaultCollector, 'copyrightMode', 'default');
+document.querySelector('#info-customCopyright').value = getPropertyOrSetDefault(defaultCollector, 'customCopyright', '™ & © {year} Wizards of the Coast');
 
 if (!localStorage.getItem('enableImportCollectorInfo')) {
 	localStorage.setItem('enableImportCollectorInfo', 'false');

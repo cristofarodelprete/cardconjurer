@@ -36,8 +36,9 @@ var LoadFABVersion = async () => {
 		left: {name:'Left Stat', text:'', x:0.162, y:0.9124, width:0.0534, height:0.0358, size:0.0358, font:'palatino', oneLine:true, align:'center', manaPrefix:'fab'},
 		right: {name:'Right Stat', text:'', x:0.7847, y:0.9124, width:0.0534, height:0.0358, size:0.0358, font:'palatino', oneLine:true, align:'center', manaPrefix:'fab'}
 	});
+	document.querySelector('#info-defaultCopyright').value = '\u00a9 {year} Legend Story Studios';
 	//bottom info
 	await loadBottomInfo({
-		regular: {text:'{kerning-2}{elemidinfo-rarity} {elemidinfo-set}{elemidinfo-number} {elemidinfo-artist} \u00a9 {elemidinfo-year} Legend Story Studios', x:0.25, y:1987/2100, width:0.5, height:0.0143, oneLine:true, font:'gothammedium', size:0.0143, color:'white', align:'center'}
+		regular: {text:'{kerning-2}{elemidinfo-rarity} {elemidinfo-set}{elemidinfo-number} {elemidinfo-artist} {elemidinfo-copyright}', x:0.25, y:1987/2100, width:0.5, height:0.0143, oneLine:true, font:'gothammedium', size:0.0143, color:'white', align:'center'}
 	});
 }

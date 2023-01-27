@@ -25,9 +25,10 @@ document.querySelector('#loadFrameVersion').onclick = async function() {
 	loadTextOptions({
 		title: {name:'Title', text:'', x:0.0474, y:0.7039, width:0.9054, height:0.0534, oneLine:true, font:'gothammedium', size:0.0534, color:'white', align:'center'},
 	});	//bottom info
+	document.querySelector('#info-defaultCopyright').value = '\u2122 & \u00a9 {year} Wizards of the Coast';
 	loadBottomInfo({
 		midLeft: {text:'{elemidinfo-set}{elemidinfo-star}{elemidinfo-language}  {savex}{fontbelerenbsc}{fontsize' + scaleHeight(0.001) + '}{upinline' + scaleHeight(0.0005) + '}\uFFEE{elemidinfo-artist}', x:0.0647, y:0.9548 + 12/2100, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
-		wizards: {name:'wizards', text:'\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast', x:0.0647, y:0.9549 + 12/2100, width:0.8707, height:0.0167, oneLine:true, font:'mplantin', size:0.0162, color:'white', align:'right', outlineWidth:0.003}
+		copyright: {name:'copyright', text:'{elemidinfo-copyright}', x:0.0647, y:0.9549 + 12/2100, width:0.8707, height:0.0167, oneLine:true, font:'mplantin', size:0.0162, color:'white', align:'right', outlineWidth:0.003}
 	});
 }
 //loads available frames

@@ -42,11 +42,12 @@ document.querySelector('#loadFrameVersion').onclick = async function() {
 		rules: {name:'Rules Text', text:'', x:0.5191, y:0.1634, width:0.4096, height:0.6734, size:0.0507},
 		additional: {name:'Extra Textbox', text:`Adjust Life{i}{lns}{up${scaleHeight(0.01)}}{bar}{lns}{right}{fontsize-${scaleHeight(0.0067)}}Revived — 20{lns}Survived — +10`, x:0.1286, width:0.2739, y:0.64, height:0.2534, size:0.0607, color:'white', align:'center'}
 	});
+	document.querySelector('#info-defaultCopyright').value = '\u2122 & \u00a9 {year} Wizards of the Coast';
 	//bottom info
 	await loadBottomInfo({
 		midLeft: {text:'{elemidinfo-set}{elemidinfo-star}{elemidinfo-language}  {savex}{fontbelerenbsc}{fontsize' + scaleHeight(0.001) + '}{upinline' + scaleHeight(0.0005) + '}\uFFEE{elemidinfo-artist}', x:0.0462, y:0.9367, width:0.9077, height:0.024, oneLine:true, font:'gothammedium', size:0.024, color:'white', outlineWidth:0.003},
 		topLeft: {text:'{elemidinfo-number}  {loadx}{elemidinfo-rarity}', x:0.0462, y:0.9127, width:0.9077, height:0.024, oneLine:true, font:'gothammedium', size:0.024, color:'white', outlineWidth:0.003},
-		wizards: {name:'wizards', text:'\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast', x:0.0462, y:0.9607, width:0.9077, height:0.0227, oneLine:true, font:'mplantin', size:0.0227, color:'white', align:'right', outlineWidth:0.003}
+		copyright: {name:'copyright', text:'{elemidinfo-copyright}', x:0.0462, y:0.9607, width:0.9077, height:0.0227, oneLine:true, font:'mplantin', size:0.0227, color:'white', align:'right', outlineWidth:0.003}
 	});
 	//runs other necessary functions
 	drawFrames();

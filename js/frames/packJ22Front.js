@@ -25,12 +25,13 @@ document.querySelector('#loadFrameVersion').onclick = async function() {
 		title: {name:'Title', text:'', x:0.0474, y:1525/2100, width:0.9054, height:0.0534, oneLine:true, font:'gothammedium', size:0.0534, color:'white', align:'center'},
 		subtitle: {name:'Subtitle', text:'', x:0.0474, y:1631/2100, width:0.9054, height:0.03, oneLine:true, font:'belerenbsc', size:0.03, color:'white', align:'center'}
 	});
+	document.querySelector('#info-defaultCopyright').value = '\u2122 & \u00a9 {year} Wizards of the Coast.';
 	//bottom info
 	await loadBottomInfo({
 		midLeft: {text:'{elemidinfo-set}{elemidinfo-star}{elemidinfo-language}  {savex}{fontbelerenbsc}{fontsize' + scaleHeight(0.001) + '}{upinline' + scaleHeight(0.0005) + '}\uFFEE{savex2}{elemidinfo-artist}', x:0.0647, y:0.9548, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 		topLeft: {text:'{elemidinfo-number}  {loadx}{elemidinfo-rarity}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 		note: {text:'{loadx2}{elemidinfo-note}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
-		wizards: {name:'wizards', text:'{ptshift0,0.0172}\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast. Illus. {elemidinfo-artist}', x:0.91, y:0.9762, width:1.3014, height:0.0153, oneLine:true, font:'mplantin', size:0.0153, color:'white', align:'right', rotation:270}
+		copyright: {name:'copyright', text:'{ptshift0,0.0172}{elemidinfo-copyright} Illus. {elemidinfo-artist}', x:0.91, y:0.9762, width:1.3014, height:0.0153, oneLine:true, font:'mplantin', size:0.0153, color:'white', align:'right', rotation:270}
 	});
 }
 //loads available frame
