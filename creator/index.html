@@ -562,9 +562,13 @@
 							</label>
 						</div>
 						<div class='readable-background padding margin-bottom'>
-							<h5 class='input-description padding margin-bottom'>Toggle between star (seen on foils) and dot (seen on regular cards)</h5>
-							<div class='padding'>
-								<button class='input padding' onclick='toggleStarDot();'>Toggle Star/Dot</button>
+							<h5 class='input-description padding margin-bottom'>Select star (seen on foils) or dot (seen on regular cards)</h5>
+							<div class='input-grid margin-bottom'>
+								<select class='input' id='info-star' onchange='toggleStarDot();'>
+									<option value=" ">None</option>
+									<option value="*" selected="selected">Star</option>
+									<option value=" • ">Dot</option>
+								</select>
 							</div>
 						</div>
 						<div class='readable-background padding margin-bottom'>

@@ -105,7 +105,7 @@ async function resetCardIrregularities({canvas = [1500, 2100, 0, 0], resetOthers
 		//bottom info
 
 		await loadBottomInfo({
-			midLeft: {text:'{elemidinfo-set} \u2022 {elemidinfo-language}  {savex}{fontbelerenbsc}{fontsize' + scaleHeight(0.001) + '}{upinline' + scaleHeight(0.0005) + '}\uFFEE{savex2}{elemidinfo-artist}', x:0.0647, y:0.9548, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
+			midLeft: {text:'{elemidinfo-set}{elemidinfo-star}{elemidinfo-language}  {savex}{fontbelerenbsc}{fontsize' + scaleHeight(0.001) + '}{upinline' + scaleHeight(0.0005) + '}\uFFEE{savex2}{elemidinfo-artist}', x:0.0647, y:0.9548, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 			topLeft: {text:'{elemidinfo-number}  {loadx}{elemidinfo-rarity}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 			note: {text:'{loadx2}{elemidinfo-note}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 			wizards: {name:'wizards', text:'{ptshift0,0.0172}\u2122 & \u00a9 {elemidinfo-year} Wizards of the Coast', x:0.0647, y:0.9377, width:0.8707, height:0.0167, oneLine:true, font:'mplantin', size:0.0162, color:'white', align:'right', outlineWidth:0.003},
@@ -2949,6 +2949,7 @@ async function bottomInfoEdited() {
 	card.infoLanguage = document.querySelector('#info-language').value;
 	card.infoArtist = document.querySelector('#info-artist').value;
 	card.infoYear = document.querySelector('#info-year').value;
+	card.infoStar = document.querySelector('#info-star').value;
 	card.infoNote = document.querySelector('#info-note').value;
 	for (var textObject of Object.entries(card.bottomInfo)) {
 		await writeText(textObject[1], bottomInfoContext);
@@ -2962,15 +2963,7 @@ function artistEdited(value) {
 	bottomInfoEdited();
 }
 function toggleStarDot() {
-	for (var key of Object.keys(card.bottomInfo)) {
-		var text = card.bottomInfo[key].text
-		if (text.includes('*')) {
-			card.bottomInfo[key].text = text.replace('*', ' \u2022 ');
-		} else {
-			card.bottomInfo[key].text = text.replace(' \u2022 ', '*');
-		}
-	}
-	defaultCollector.starDot = !defaultCollector.starDot;
+	defaultCollector.star = document.querySelector('#info-star').value;
 	bottomInfoEdited();
 }
 function enableImportCollectorInfo() {
@@ -2988,14 +2981,13 @@ function removeDefaultCollector() {
 	localStorage.removeItem('defaultCollector'); //localStorage.setItem('defaultCollector', JSON.stringify(defaultCollector));
 }
 function setDefaultCollector() {
-	starDot = defaultCollector.starDot;
 	defaultCollector = {
 		number: document.querySelector('#info-number').value,
 		rarity: document.querySelector('#info-rarity').value,
 		setCode: document.querySelector('#info-set').value,
 		lang: document.querySelector('#info-language').value,
-		note: document.querySelector('#info-note').value,
-		starDot: starDot
+		star: document.querySelector('#info-star').value,
+		note: document.querySelector('#info-note').value
 	};
 	localStorage.setItem('defaultCollector', JSON.stringify(defaultCollector));
 }
@@ -3589,16 +3581,13 @@ document.querySelector('#autoLoadFrameVersion').checked = 'true' == localStorage
 
 // collector info (user defaults)
 var defaultCollector = JSON.parse(localStorage.getItem('defaultCollector') || '{}');
-if ('number' in defaultCollector) {
-	document.querySelector('#info-number').value = defaultCollector.number;
-	document.querySelector('#info-note').value = defaultCollector.note;
-	document.querySelector('#info-rarity').value = defaultCollector.rarity;
-	document.querySelector('#info-set').value = defaultCollector.setCode;
-	document.querySelector('#info-language').value = defaultCollector.lang;
-	if (defaultCollector.starDot) {setTimeout(function(){defaultCollector.starDot = false; toggleStarDot();}, 500);}
-} else {
-	document.querySelector('#info-number').value = date.getFullYear();
-}
+document.querySelector('#info-number').value = getPropertyOrSetDefault(defaultCollector, 'number', new Date().getFullYear());
+document.querySelector('#info-rarity').value = getPropertyOrSetDefault(defaultCollector, 'rarity', 'P');
+document.querySelector('#info-set').value = getPropertyOrSetDefault(defaultCollector, 'setCode', 'MTG');
+document.querySelector('#info-language').value = getPropertyOrSetDefault(defaultCollector, 'lang', 'EN');
+document.querySelector('#info-star').value = getPropertyOrSetDefault(defaultCollector, 'star', '*');
+document.querySelector('#info-note').value = getPropertyOrSetDefault(defaultCollector, 'note', '');
+
 if (!localStorage.getItem('enableImportCollectorInfo')) {
 	localStorage.setItem('enableImportCollectorInfo', 'false');
 } else {
