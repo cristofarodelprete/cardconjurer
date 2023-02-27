@@ -1,5 +1,6 @@
 loadFramePacks([
 	{name:'Set Showcase Frames (Chronological)', value:'disabled'},
+	{name:'Oil Slick (ONE)', value:'OilSlick'},
 	{name:'Stained Glass (DMU)', value:'DMUStainedGlass'},
 	{name:'Golden Age (SNC)', value:'SNCGilded'},
 	{name:'Art Deco (SNC)', value:'SNCArtDeco'},
@@ -16,7 +17,6 @@ loadFramePacks([
 	{name:'Mystical Archive (STA)', value:'MysticalArchive'},
 	{name:'Japanese Mystical Archive (STA)', value:'MysticalArchiveJP'},
 	{name:'Horizontal Japanese Mystical Archive (STA)', value:'MysticalArchiveJPHorizontal'},
-	{name:'Praetors (KHM)', value:'Praetors'},
 	{name:'Kaldheim (KHM)', value:'Kaldheim-2'},
 	{name:'Nonlegendary Kaldheim (KHM)', value:'KaldheimNonleg'},
 	{name:'Commander Legends (CMR)', value:'CommanderLegends'},
@@ -35,6 +35,7 @@ loadFramePacks([
 	{name:'Full Text', value:'FullText'},
 	{name:'Etched (Commander Precons)', value:'Etched'},
 	{name:'Masterpieces/Other', value:'disabled'},
+	{name:'Phyrexian', value:'Praetors'},
 	{name:'ZNR Expeditions (2020)', value:'ExpeditionZNR-1'},
 	{name:'Signature Spellbook (Jace/Gideon)', value:'SignatureSpellbook'},
 	{name:'Ixalan Maps', value:'Ixalan'},

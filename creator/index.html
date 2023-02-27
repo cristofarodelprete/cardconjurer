@@ -205,6 +205,7 @@
 						<div class='readable-background padding margin-bottom'>
 							<h5 class='margin-bottom padding input-description'>Enter card text</h5>
 							<textarea id='text-editor' class='input margin-bottom' oninput='textEdited();'></textarea>
+							<button class='input' onclick="toggleTextTag('i');">Italic</button>
 							<h5 class='margin-bottom padding input-description'>Edit the placement and size of the selected textbox</h5>
 							<button class='input' onclick='textboxEditor();'>Edit Bounds</button>
 							<h5 class='margin-bottom padding input-description'>Adjust font size</h5>
@@ -218,7 +219,7 @@
 								<h5 class='margin-top'>Text Codes:</h5>
 								<div class='text-codes margin-bottom padding'>
 									<h5>Code</h5><h5>Result</h5>
-									<h5>{cardname}</h5><h5>Inserts the name of the card</h5>
+									<h5>{cardname}</h5><h5>Inserts the name of the card (or use a tilde: ~)</h5>
 									<h5>{-}</h5><h5>Inserts an em-dash</h5>
 									<h5>{i}</h5><h5>Italicizes text</h5>
 									<h5>{/i}</h5><h5>Removes italicization</h5>
@@ -652,6 +653,7 @@
 							<!-- <option value="M15ExtendedArtShort">Extended Art (Shorter Textbox)</option> -->
 							<option value="UB">Universes Beyond</option>
 							<option value="Etched">Etched</option>
+							<option value="Praetors">Phyrexian</option>
 							<option value="8th">8th Edition</option>
 							<option value="Seventh">Seventh Edition</option>
 						</select>

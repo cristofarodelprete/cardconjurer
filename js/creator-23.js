@@ -103,8 +103,9 @@ async function resetCardIrregularities({canvas = [1500, 2100, 0, 0], resetOthers
 
 		await loadBottomInfo({
 			midLeft: {text:'{elemidinfo-set}{elemidinfo-star}{elemidinfo-language}  {savex}{fontbelerenbsc}{fontsize' + scaleHeight(0.001) + '}{upinline' + scaleHeight(0.0005) + '}\uFFEE{savex2}{elemidinfo-artist}', x:0.0647, y:0.9548, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
-			topLeft: {text:'{elemidinfo-number}  {loadx}{elemidinfo-rarity}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
+			topLeft: {text:'{elemidinfo-number}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 			note: {text:'{loadx2}{elemidinfo-note}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
+			rarity: {text:'{loadx}{elemidinfo-rarity}', x:0.0647, y:0.9377, width:0.8707, height:0.0171, oneLine:true, font:'gothammedium', size:0.0171, color:'white', outlineWidth:0.003},
 			copyright: {name:'copyright', text:'{ptshift0,0.0172}{elemidinfo-copyright}', x:0.0647, y:0.9377, width:0.8707, height:0.0167, oneLine:true, font:'mplantin', size:0.0162, color:'white', align:'right', outlineWidth:0.003}
 		});
 		//onload
@@ -165,6 +166,16 @@ function getCardName() {
 	var imageName = card.text.title.text || 'unnamed';
 	if (card.text.nickname) {
 		imageName += ' (' + card.text.nickname.text + ')';
+	}
+	return imageName.replace(/\{[^}]+\}/g, '');
+}
+function getInlineCardName() {
+	if (card.text == undefined || card.text.title == undefined) {
+		return 'unnamed';
+	}
+	var imageName = card.text.title.text || 'unnamed';
+	if (card.text.nickname) {
+		imageName = card.text.nickname.text;
 	}
 	return imageName.replace(/\{[^}]+\}/g, '');
 }
@@ -257,7 +268,7 @@ const setSymbolAliases = new Map([
 	["pmei", "sld"],
 ]);
 //Mana Symbols
-const mana = new Map();""
+const mana = new Map();
 // var manaSymbols = [];
 loadManaSymbols(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
 				 'w', 'u', 'b', 'r', 'g', 'c', 'x', 'y', 'z', 't', 'untap', 'e', 's', 'oldtap', 'originaltap', 'purple', "a", "inf", "alchemy"]);
@@ -2096,6 +2107,7 @@ async function drawText() {
 		drawCard();
 	}
 }
+var justifyWidth = 90;
 function writeText(textObject, targetContext) {
 	//Most bits of info about text loaded, with defaults when needed
 	var textX = scaleX(textObject.x) || scaleX(0);
@@ -2117,11 +2129,9 @@ function writeText(textObject, targetContext) {
 	//Preps the text string
 	var splitString = '6GJt7eL8';
 	var rawText = textObject.text
-	if (rawText.includes('~')) {
-		rawText = rawText.replace(/~/g, getCardName());
-	}
-	if (rawText.toLowerCase().includes('{cardname}')) {
-		rawText = rawText.replace(/{cardname}/ig, getCardName());
+
+	if (rawText.toLowerCase().includes('{cardname}') || rawText.toLowerCase().includes('~')) {
+		rawText = rawText.replace(/{cardname}|~/ig, getInlineCardName());
 	}
 	if (document.querySelector('#info-artist').value == '') {
 		rawText = rawText.replace('\uFFEE{elemidinfo-artist}', '');
@@ -2206,6 +2216,7 @@ function writeText(textObject, targetContext) {
 		var newLineSpacing = (textObject.lineSpacing || 0) * textSize;
 		var ptShift = [0, 0];
 		var permaShift = [0, 0];
+		var fillJustify = false;
 		//Finish prepping canvases
 		paragraphContext.clearRect(0, 0, paragraphCanvas.width, paragraphCanvas.height);
 		lineContext.clearRect(0, 0, lineCanvas.width, lineCanvas.height);
@@ -2245,6 +2256,13 @@ function writeText(textObject, targetContext) {
 					}
 					if (wordToWrite !== null) {
 						wordToWrite = wordToWrite.replace('{year}', document.querySelector('#info-year').value || new Date().getFullYear());
+					}
+					if (word.includes('set')) {
+						var bottomTextSubstring = card.bottomInfo.midLeft.text.substring(0, card.bottomInfo.midLeft.text.indexOf('  {savex}')).replace('{elemidinfo-set}', document.querySelector('#info-set').value || '').replace('{elemidinfo-language}', document.querySelector('#info-language').value || '');
+						justifyWidth = lineContext.measureText(bottomTextSubstring).width;
+					} else if (word.includes('number') && wordToWrite.includes('/')) {
+						fillJustify = true;
+						wordToWrite = Array.from(wordToWrite).join(' ');
 					}
 				} else if (possibleCode == 'line') {
 					newLine = true;
@@ -2369,6 +2387,7 @@ function writeText(textObject, targetContext) {
 					startingCurrentX += planechaseHeight * 1.3;
 				} else if (possibleCode == 'indent') {
 					startingCurrentX += currentX;
+					currentY -= 10;
 				} else if (possibleCode == '/indent') {
 					startingCurrentX = 0;
 				} else if (possibleCode == 'savex') {
@@ -2419,8 +2438,8 @@ function writeText(textObject, targetContext) {
 				} else if (possibleCode.includes('kerning')) {
 					lineCanvas.style.letterSpacing = possibleCode.replace('kerning', '') + 'px';
 					lineContext.font = lineContext.font; //necessary for the letterspacing update to be recognized
-				} else if (getManaSymbol(possibleCode.replace('/', '')) != undefined || getManaSymbol(possibleCode.replace('/', '').split('').reverse().join('')) != undefined) {
-					possibleCode = possibleCode.replace('/', '')
+				} else if (getManaSymbol(possibleCode.replaceAll('/', '')) != undefined || getManaSymbol(possibleCode.replaceAll('/', '').split('').reverse().join('')) != undefined) {
+					possibleCode = possibleCode.replaceAll('/', '')
 					var manaSymbol;
 					if (textObject.manaPrefix && (getManaSymbol(textObject.manaPrefix + possibleCode) != undefined || getManaSymbol(textObject.manaPrefix + possibleCode.split('').reverse().join('')) != undefined)) {
 						manaSymbol = getManaSymbol(textObject.manaPrefix + possibleCode) || getManaSymbol(textObject.manaPrefix + possibleCode.split('').reverse().join(''));
@@ -2491,6 +2510,11 @@ function writeText(textObject, targetContext) {
 					wordToWrite = word;
 				}
 			}
+
+			if (wordToWrite && lineContext.font.endsWith('belerenb')) {
+				wordToWrite = wordToWrite.replace(/f(?:\s|$)/g, '\ue006').replace(/h(?:\s|$)/g, '\ue007').replace(/m(?:\s|$)/g, '\ue008').replace(/n(?:\s|$)/g, '\ue009').replace(/k(?:\s|$)/g, '\ue00a');
+			}
+
 			//if the word goes past the max line width, go to the next line
 			if (wordToWrite && lineContext.measureText(wordToWrite).width + currentX >= textWidth && textArcRadius == 0) {
 				if (textOneLine && startingTextSize > 1) {
@@ -2536,15 +2560,33 @@ function writeText(textObject, targetContext) {
 			}
 			//if there's a word to write, it's not a space on a new line, and it's allowed to write words, then we write the word
 			if (wordToWrite && (currentX != startingCurrentX || wordToWrite != ' ') && !textManaCost) {
+				var justifySettings = {
+					maxSpaceSize: 6,
+					minSpaceSize: 0
+				};
+
 				if (textArcRadius > 0) {
 					lineContext.fillTextArc(wordToWrite, currentX + canvasMargin, canvasMargin + textSize * textFontHeightRatio + lineY, textArcRadius, textArcStart, currentX, textOutlineWidth);
 				} else {
 					if (textOutlineWidth >= 1) {
-						lineContext.strokeText(wordToWrite, currentX + canvasMargin, canvasMargin + textSize * textFontHeightRatio + lineY);
+						if (fillJustify) {
+							lineContext.strokeJustifyText(wordToWrite, currentX + canvasMargin, canvasMargin + textSize * textFontHeightRatio + lineY, justifyWidth, justifySettings);
+						} else {
+							lineContext.strokeText(wordToWrite, currentX + canvasMargin, canvasMargin + textSize * textFontHeightRatio + lineY);
+						}
 					}
-					lineContext.fillText(wordToWrite, currentX + canvasMargin, canvasMargin + textSize * textFontHeightRatio + lineY);
+					if (fillJustify) {
+						lineContext.fillJustifyText(wordToWrite, currentX + canvasMargin, canvasMargin + textSize * textFontHeightRatio + lineY, justifyWidth, justifySettings);
+					} else {
+						lineContext.fillText(wordToWrite, currentX + canvasMargin, canvasMargin + textSize * textFontHeightRatio + lineY);
+					}
 				}
-				currentX += lineContext.measureText(wordToWrite).width;
+
+				if (fillJustify) {
+					currentX += lineContext.measureJustifiedText(wordToWrite, justifyWidth, justifySettings);
+				} else {
+					currentX += lineContext.measureText(wordToWrite).width;
+				}
 			}
 			if (currentY > textHeight && textBounded && !textOneLine && startingTextSize > 1 && textArcRadius == 0) {
 				//doesn't fit... try again at a smaller text size?
@@ -2623,6 +2665,97 @@ CanvasRenderingContext2D.prototype.fillImage = function(image, x, y, width, heig
 	context.fillRect(0, 0, width + margin * 2, height + margin * 2);
 	this.drawImage(canvas, x - margin, y - margin, width + margin * 2, height + margin * 2);
 }
+
+const FILL = 0; //const to indicate filltext render
+const STROKE = 1;
+const MEASURE = 2;
+var maxSpaceSize = 3; // Multiplier for max space size. If greater then no justification applied
+var minSpaceSize = 0.5; // Multiplier for minimum space size
+function renderTextJustified(ctx, text, x, y, width, renderType) {
+	var splitChar = " ";
+
+	var words, wordsWidth, count, spaces, spaceWidth, adjSpace, renderer, i, textAlign, useSize, totalWidth;
+	textAlign = ctx.textAlign;
+	ctx.textAlign = "left";
+	wordsWidth = 0;
+	words = text.split(splitChar).map(word => {
+		var w = ctx.measureText(word).width;
+		wordsWidth += w;
+		return {
+			width: w,
+			word: word
+		};
+	});
+	// count = num words, spaces = number spaces, spaceWidth normal space size
+	// adjSpace new space size >= min size. useSize Reslting space size used to render
+	count = words.length;
+	spaces = count - 1;
+	spaceWidth = ctx.measureText(splitChar).width;
+	adjSpace = Math.max(spaceWidth * minSpaceSize, (width - wordsWidth) / spaces);
+	useSize = adjSpace > spaceWidth * maxSpaceSize ? spaceWidth : adjSpace;
+	totalWidth = wordsWidth + useSize * spaces;
+	if (renderType === MEASURE) { // if measuring return size
+		ctx.textAlign = textAlign;
+		return totalWidth;
+	}
+	renderer = renderType === FILL ? ctx.fillText.bind(ctx) : ctx.strokeText.bind(ctx); // fill or stroke
+	switch(textAlign) {
+	case "right":
+		x -= totalWidth;
+		break;
+	case "end":
+		x += width - totalWidth;
+		break;
+	case "center": // intentional fall through to default
+		x -= totalWidth / 2;
+	default:
+	}
+	if (useSize === spaceWidth) { // if space size unchanged
+		renderer(text, x, y);
+	} else {
+		for(i = 0; i < count; i += 1) {
+			renderer(words[i].word,x,y);
+			x += words[i].width;
+			x += useSize;
+		}
+	}
+	ctx.textAlign = textAlign;
+}
+
+// Parse vet and set settings object.
+function justifiedTextSettings(settings) {
+	var min,max;
+	var vetNumber = (num, defaultNum) => {
+		num = num !== null && num !== null && !isNaN(num) ? num : defaultNum;
+		if(num < 0){
+			num = defaultNum;
+		}
+		return num;
+	}
+	if(settings === undefined || settings === null){
+		return;
+	}
+	max = vetNumber(settings.maxSpaceSize, maxSpaceSize);
+	min = vetNumber(settings.minSpaceSize, minSpaceSize);
+	if(min > max){
+		return;
+	}
+	minSpaceSize = min;
+	maxSpaceSize = max;
+}
+CanvasRenderingContext2D.prototype.fillJustifyText = function(text, x, y, width, settings) {
+	justifiedTextSettings(settings);
+	renderTextJustified(this, text, x, y, width, FILL);
+}
+CanvasRenderingContext2D.prototype.strokeJustifyText = function(text, x, y, width, settings){
+	justifiedTextSettings(settings);
+	renderTextJustified(this, text, x, y, width, STROKE);
+}
+CanvasRenderingContext2D.prototype.measureJustifiedText = function(text, width, settings) {
+	justifiedTextSettings(settings);
+	renderTextJustified(this, text, 0, 0, width, MEASURE);
+}
+
 function widthToAngle(width, radius) {
 	return width / radius;
 }
@@ -2677,6 +2810,23 @@ function autoFitArt() {
 	}
 	artEdited();
 }
+
+function centerArtX() {
+	document.querySelector('#art-rotate').value = 0;
+	if (art.width / art.height > scaleWidth(card.artBounds.width) / scaleHeight(card.artBounds.height)) {
+		document.querySelector('#art-x').value = Math.round(scaleX(card.artBounds.x) - (document.querySelector('#art-zoom').value / 100 * art.width - scaleWidth(card.artBounds.width)) / 2 - scaleWidth(card.marginX));
+	} else {
+		document.querySelector('#art-x').value = Math.round(scaleX(card.artBounds.x) - scaleWidth(card.marginX));
+	}
+	artEdited();
+}
+
+function centerArtY() {
+	document.querySelector('#art-rotate').value = 0;
+	document.querySelector('#art-y').value = Math.round(scaleY(card.artBounds.y) - (document.querySelector('#art-zoom').value / 100 * art.height - scaleHeight(card.artBounds.height)) / 2 - scaleHeight(card.marginY));
+	artEdited();
+}
+
 function artFromScryfall(scryfallResponse) {
 	scryfallArt = []
 	const artIndex = document.querySelector('#art-index');
@@ -2833,6 +2983,10 @@ function fetchSetSymbol() {
 		if (setSymbolAliases.has(setCode.toLowerCase())) setCode = setSymbolAliases.get(setCode.toLowerCase());
 		uploadSetSymbol('http://gatherer.wizards.com/Handlers/Image.ashx?type=symbol&set=' + setCode + '&size=large&rarity=' + setRarity, 'resetSetSymbol');
 	} else {
+		var extension = 'svg';
+		if (['one', 'onc'].includes(setCode.toLowerCase())) {
+			extension = 'png';
+		}
 		if (setSymbolAliases.has(setCode.toLowerCase())) setCode = setSymbolAliases.get(setCode.toLowerCase());
 		uploadSetSymbol(fixUri(`/img/setSymbols/official/${setCode.toLowerCase()}-${setRarity}.svg`), 'resetSetSymbol');
 	}
@@ -3146,7 +3300,13 @@ function changeCardIndex() {
 				}
 				flavorTextCounter ++;
 			}
-			card.text.rules.text += '{flavor}' + curlyQuotes(flavorText.replace('\n', '{lns}'));
+
+			if (!cardToImport.oracle_text || cardToImport.oracle_text == '') {
+				card.text.rules.text += '{i}';
+			} else {
+				card.text.rules.text += '{flavor}';
+			}
+			card.text.rules.text += curlyQuotes(flavorText.replace('\n', '{lns}'));
 		}
 	}
 	if (card.text.pt) {card.text.pt.text = cardToImport.power + '/' + cardToImport.toughness || '';}
@@ -3165,7 +3325,7 @@ function changeCardIndex() {
 					planeswalkerAbility = ['', planeswalkerAbility[0]];
 				}
 				card.text['ability' + i].text = planeswalkerAbility[1].replace('(', '{i}(').replace(')', '){/i}');
-				if (card.version == 'planeswalkerTall') {
+				if (card.version == 'planeswalkerTall' || card.version == 'planeswalkerCompleated') {
 					document.querySelector('#planeswalker-height-' + i).value = Math.round(scaleHeight(0.3572) / planeswalkerAbilities.length);
 				} else {
 					document.querySelector('#planeswalker-height-' + i).value = Math.round(scaleHeight(0.2915) / planeswalkerAbilities.length);
@@ -3473,7 +3633,10 @@ function setRoundedCorners(value) {
 //Various loaders
 function imageURL(url, destination, otherParams) {
 	var imageurl = url;
-	if (params.get('noproxy') != '') {
+	// If an image URL does not have HTTP in it, assume it's a local file in the repo local_art directory.
+	if (!url.includes('http')) {
+		imageurl = '/local_art/' + url;
+	} else if (params.get('noproxy') != '') {
 		//CORS PROXY LINKS
 		//Previously: https://cors.bridged.cc/
 		imageurl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url);
@@ -3599,6 +3762,34 @@ function getPropertyOrSetDefault(obj, key, defVal) {
 	return obj[key];
 }
 
+function toggleTextTag(tag) {
+	var element = document.getElementById('text-editor');
+
+	var text = element.value;
+
+	var start = element.selectionStart;
+	var end = element.selectionEnd;
+	var selection = text.substring(start, end);
+
+	var openTag = '{' + tag + '}';
+	var closeTag = '{/' + tag + '}';
+
+	var prefix = text.substring(0, start);
+	var suffix = text.substring(end);
+
+	if (prefix.endsWith(openTag) && suffix.startsWith(closeTag)) {
+		prefix = prefix.substring(0, prefix.length-openTag.length);
+		suffix = suffix.substring(closeTag.length);
+	} else if (selection.startsWith(openTag) && selection.endsWith(closeTag)) {
+		selection = selection.substring(openTag.length, selection.length-closeTag.length);
+	} else {
+		selection = openTag + selection + closeTag;
+	}
+
+	element.value = prefix + selection + suffix;
+
+	textEdited();
+}
 // INITIALIZATION
 
 // auto load frame version (user defaults)
